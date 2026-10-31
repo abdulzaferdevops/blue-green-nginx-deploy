@@ -1,0 +1,9 @@
+# Never commit keys, secrets or environment files
+*.pem
+*.key
+id_*
+ci-lab
+ci-lab.pub
+.env
+*.token
+auth.json
