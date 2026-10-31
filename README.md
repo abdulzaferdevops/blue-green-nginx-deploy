@@ -80,10 +80,15 @@ rule, nginx on 8087 (public) and 127.0.0.1:8088 (preview), SELinux port labels, 
 
 | Build | Action | Outcome |
 |:--|:--|:--|
-| [FILL: #] | deploy `00004` | first release into a slot |
-| [FILL: #] | deploy `00007` | [FILL: requests / failed during the switch] |
-| [FILL: #] | rollback | [FILL: switch seconds, failed requests] |
-| [FILL: #] | deploy with `SIMULATE_FAILURE` | [FILL] |
+| #2 | deploy `00004` | First release: staged in green, preview passed, switched in 1.1 s |
+| #3 | deploy `00007` with approval | `00007` staged and tested in blue while users stayed on `00004`; nobody approved, the input timed out after 10 minutes and **nothing moved** |
+| #5 | deploy `00007` | green → blue in 1.2 s; **630 requests during the switch, 0 failed** |
+| #6 | rollback | blue → green (`00004`, still running) in 1.2 s, no pull or restart; **635 requests, 0 failed** |
+| #7 | deploy with `SIMULATE_FAILURE` | Idle-slot health check failed; blue stopped and cleared, build failed, live traffic never left green |
+
+For comparison, Lab 5's in-place restart shows `Connection reset by peer` in the nginx error log
+while the container restarts. The preview port is not reachable from outside (8088 is bound to
+127.0.0.1 and not opened in the NSG or firewalld).
 
 ## Licence
 
